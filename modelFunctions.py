@@ -83,3 +83,59 @@ def recognizeByPhoto(imgPath):
             return name
         else:
             return "Nainasm"
+
+
+def addPeople():
+    cap = cv2.VideoCapture(0)
+    _end = False
+    while True:
+        success, img = cap.read()
+        imgS = cv2.resize(img, (0, 0), None, 0.25, 0.25)
+        imgS = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        facesCurFr = face_recognition.face_locations(imgS)
+
+        cv2.putText(
+            img,
+            "PRESS 'Y' FOR IMG",
+            (200, 200),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 255, 255),
+            2,
+        )
+
+        if not facesCurFr:
+            print("no faces Detected")
+            cv2.putText(
+                img,
+                "No Faces Detected",
+                (100, 100),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (255, 255, 255),
+                2,
+            )
+        else:
+            for faceLok in facesCurFr:
+                if faceLok:
+                    y1, x2, y2, x1 = faceLok
+                    y1, x2, y2, x1 = y1 - 40, x2 - 10, y2 + 40, x1 + 10
+                    cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+                    if cv2.waitKey(1) & 0xFF == ord("y"):  # save on pressing 'y'
+                        ret, frame = cap.read()
+                        cv2.imwrite("Photo/CHANGE_THE_NAME.png", frame)
+                        cv2.destroyAllWindows()
+                        cap.release()
+                        _end = True
+
+        if _end:
+            quit()
+            break
+
+        cv2.imshow("Webcam", img)
+        cv2.waitKey(1)
+
+
+addPeople()
